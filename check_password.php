@@ -1,5 +1,5 @@
 <?php
-require 'vendor/autoload.php'; // Asegúrate de que Composer está configurado correctamente
+require 'vendor/autoload.php';
 
 use ZxcvbnPhp\Zxcvbn;
 
@@ -7,10 +7,9 @@ function getCrackTimeEstimate($password) {
     $zxcvbn = new Zxcvbn();
     $result = $zxcvbn->passwordStrength($password);
 
-    // Los valores crack_times_seconds contienen diferentes escenarios de crackeo (online, offline, etc.)
+
     $crack_times_seconds = $result['crack_times_seconds'];
 
-    // Puedes seleccionar el tiempo que más te interese. Aquí selecciono el peor caso (offline fast hash)
     $worst_case_time = $crack_times_seconds['offline_fast_hashing_1e10_per_second'];
 
     return convertTime($worst_case_time);
