@@ -1,5 +1,4 @@
 <?php
-function generatePassword($length, $options){
     function generatePassword($length, $options)
     {
         $characters = '';
@@ -34,5 +33,5 @@ function generatePassword($length, $options){
         $password = generatePassword($length, $options);
 
         echo $password;
-    }
 }
+

@@ -55,9 +55,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Resultado de Fortaleza de Contraseña</title>
     <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet">
+    <title>Resultado de Fortaleza de Contraseña</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -76,6 +76,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             width: 100%;
             max-width: 400px;
             text-align: center;
+            max-height: 90vh; /* Ajusta la altura máxima según tus necesidades */
+            overflow-y: auto; /* Añade el scroll vertical si el contenido supera la altura máxima */
         }
         h1 {
             color: #333;
@@ -101,14 +103,61 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .back-button:hover {
             background-color: #0056b3;
         }
+        .password-generator {
+            margin-top: 20px;
+            text-align: left;
+        }
+        .password-generator label {
+            font-weight: bold;
+            display: block;
+            margin-top: 10px;
+        }
+        .password-generator input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .password-generator .checkbox-group {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+        .password-generator .checkbox-group label {
+            font-weight: normal;
+            display: flex;
+            align-items: center;
+        }
+        .password-generator .btn {
+            background-color: #007BFF;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .password-generator .btn:hover {
+            background-color: #0056b3;
+        }
+        .password-generator .password-display {
+            margin-top: 10px;
+            font-weight: bold;
+            font-size: 18px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
 <div class="container">
-    <h1>Resultado de Fortaleza de Contraseña</h1>
     <?php if ($_SERVER['REQUEST_METHOD'] === 'POST'): ?>
-        <p><strong>Contraseña ingresada:</strong> <?php echo htmlspecialchars($password); ?></p>
-        <p><strong>Tiempo para descifrar:</strong> <?php echo htmlspecialchars($crack_time); ?></p>
+        <h1>Resultado de Fortaleza de Contraseña</h1>
+        <ul>
+            <li>Contraseña Ingresada: <?php echo htmlspecialchars($password, ENT_QUOTES, 'UTF-8'); ?></li>
+            <li>Tiempo para decifrar: <?php echo htmlspecialchars($crack_time, ENT_QUOTES, 'UTF-8'); ?></li>
+        </ul>
         <h2>Tipos de Caracteres en la Contraseña</h2>
         <ul>
             <li>Mayúsculas: <?php echo $character_types['uppercase'] ? 'Sí' : 'No'; ?></li>
@@ -145,64 +194,70 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </ul>
         </section>
 
-    <section>
-        <div class="container">
-            <div class="password" id="password">************</div>
-            <form action="generatePassword.php" method="post">
-                <label for="length">Longitud de la contraseña:</label>
-                <input type="number" id="length" name="length" value="12" min="1" max="20">
-                <br>
-                <input type="checkbox" id="uppercase" name="options[]" value="uppercase" checked>
-                <label for="uppercase">Mayúsculas</label>
-                <input type="checkbox" id="lowercase" name="options[]" value="lowercase" checked>
-                <label for="lowercase">Minúsculas</label>
-                <input type="checkbox" id="numbers" name="options[]" value="numbers" checked>
-                <label for="numbers">Números</label>
-                <input type="checkbox" id="symbols" name="options[]" value="symbols" checked>
-                <label for="symbols">Símbolos</label>
-                <br><br>
-                <button type="submit" class="btn">Copiar contraseña</button>
-
-            </form>
-        </div>
-
-        <script>
-            function generatePassword() {
-                const length = document.getElementById('length').value;
-                const options = [];
-                if (document.getElementById('uppercase').checked) options.push('uppercase');
-                if (document.getElementById('lowercase').checked) options.push('lowercase');
-                if (document.getElementById('numbers').checked) options.push('numbers');
-                if (document.getElementById('symbols').checked) options.push('symbols');
-
-                const xhr = new XMLHttpRequest();
-                xhr.open("POST", "generate.php", true);
-                xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-
-                xhr.onreadystatechange = function() {
-                    if (xhr.readyState === 4 && xhr.status === 200) {
-                        const password = xhr.responseText;
-                        document.getElementById('password').innerText = password;
-                        copyToClipboard(password);
-                    }
-                };
-
-                xhr.send("length=" + length + "&options=" + JSON.stringify(options));
-            }
-
-            function copyToClipboard(text) {
-                const textarea = document.createElement('textarea');
-                textarea.value = text;
-                document.body.appendChild(textarea);
-                textarea.select();
-                document.execCommand('copy');
-                document.body.removeChild(textarea);
-                alert("Contraseña copiada al portapapeles");
-            }
-
-    </section>
+        <section class="password-generator">
+            <label for="length">Longitud de la contraseña:</label>
+            <input type="number" id="length" name="length" value="12" min="1" max="20">
+            <div class="checkbox-group">
+                <label for="uppercase"><input type="checkbox" id="uppercase" name="options[]" value="uppercase" checked> Mayúsculas</label>
+                <label for="lowercase"><input type="checkbox" id="lowercase" name="options[]" value="lowercase" checked> Minúsculas</label>
+            </div>
+            <div class="checkbox-group">
+                <label for="numbers"><input type="checkbox" id="numbers" name="options[]" value="numbers" checked> Números</label>
+                <label for="symbols"><input type="checkbox" id="symbols" name="options[]" value="symbols" checked> Símbolos</label>
+            </div>
+            <button type="button" class="btn" onclick="generatePasswordAndCopy()">Generar y Copiar Contraseña</button>
+            <br>
+            <div class="password-display" id="password">************</div>
+        </section
+        <br>
+        <br>
+        <br>
         <a href="index.html" class="back-button">Volver</a>
     <?php endif; ?>
 </div>
+<script>
+    function generatePasswordAndCopy() {
+        const length = document.getElementById('length').value;
+        const options = {
+            uppercase: document.getElementById('uppercase').checked,
+            lowercase: document.getElementById('lowercase').checked,
+            numbers: document.getElementById('numbers').checked,
+            symbols: document.getElementById('symbols').checked
+        };
+
+        const password = generatePassword(length, options);
+        document.getElementById('password').innerText = password;
+        copyToClipboard(password);
+    }
+
+    function generatePassword(length, options) {
+        const uppercaseChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        const lowercaseChars = 'abcdefghijklmnopqrstuvwxyz';
+        const numberChars = '0123456789';
+        const symbolChars = '!@#$%^&*()_+~`|}{[]:;?><,./-=';
+        let allChars = '';
+        if (options.uppercase) allChars += uppercaseChars;
+        if (options.lowercase) allChars += lowercaseChars;
+        if (options.numbers) allChars += numberChars;
+        if (options.symbols) allChars += symbolChars;
+
+        let password = '';
+        for (let i = 0; i < length; i++) {
+            const randomIndex = Math.floor(Math.random() * allChars.length);
+            password += allChars[randomIndex];
+        }
+        return password;
+    }
+
+    function copyToClipboard(text) {
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        alert("Contraseña copiada al portapapeles");
+    }
+</script>
 </body>
 </html>
