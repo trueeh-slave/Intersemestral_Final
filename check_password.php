@@ -215,7 +215,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <form id='passwordForm' action="getNewTime.php" method="post">
                 <input type="hidden" id="generatedPassword" name="password">
                 <div class="btn-generate">
-                    <button type="button" class="back-button" onclick="generatePasswordAndCopy()">Generar y Copiar Contraseña</button>
+                    <button type="button" class="back-button" onclick="validateAndGeneratePassword()">Generar y Copiar Contraseña</button>
                 </div>
             </form>
             <br>
@@ -229,6 +229,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <?php endif; ?>
 </div>
 <script>
+    function validateAndGeneratePassword() {
+        if (!document.getElementById('uppercase').checked &&
+            !document.getElementById('lowercase').checked &&
+            !document.getElementById('numbers').checked &&
+            !document.getElementById('symbols').checked) {
+            alert('Debe seleccionar al menos una opción para los tipos de caracteres.');
+            return;
+        }
+        generatePasswordAndCopy();
+    }
 
     function generatePasswordAndCopy() {
         const length = document.getElementById('length').value;
@@ -264,7 +274,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         copyToClipboard(password);
     }
 
-
     function generatePassword(length, options) {
         const uppercaseChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
         const lowercaseChars = 'abcdefghijklmnopqrstuvwxyz';
@@ -283,7 +292,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         return password;
     }
-
 
     function copyToClipboard(text) {
         const textarea = document.createElement('textarea');
