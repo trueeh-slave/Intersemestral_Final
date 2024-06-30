@@ -76,8 +76,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             width: 100%;
             max-width: 400px;
             text-align: center;
-            max-height: 90vh; /* Ajusta la altura máxima según tus necesidades */
-            overflow-y: auto; /* Añade el scroll vertical si el contenido supera la altura máxima */
+            max-height: 90vh;
+            overflow-y: auto;
         }
         h1 {
             color: #333;
@@ -148,6 +148,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             font-size: 18px;
             text-align: center;
         }
+
+        .btn-generate {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
     </style>
 </head>
 <body>
@@ -205,9 +212,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <label for="numbers"><input type="checkbox" id="numbers" name="options[]" value="numbers" checked> Números</label>
                 <label for="symbols"><input type="checkbox" id="symbols" name="options[]" value="symbols" checked> Símbolos</label>
             </div>
-            <button type="button" class="btn" onclick="generatePasswordAndCopy()">Generar y Copiar Contraseña</button>
+            <form id='passwordForm' action="getNewTime.php" method="post">
+                <input type="hidden" id="generatedPassword" name="password">
+                <div class="btn-generate">
+                    <button type="button" class="back-button" onclick="generatePasswordAndCopy()">Generar y Copiar Contraseña</button>
+                </div>
+            </form>
             <br>
             <div class="password-display" id="password">************</div>
+            <div class="password-display" id="crackTime">  </div>
         </section
         <br>
         <br>
@@ -216,6 +229,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <?php endif; ?>
 </div>
 <script>
+
     function generatePasswordAndCopy() {
         const length = document.getElementById('length').value;
         const options = {
@@ -225,10 +239,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             symbols: document.getElementById('symbols').checked
         };
 
+        if (length < 5) {
+            alert('La longitud mínima de la contraseña es de 5 caracteres');
+            return;
+        } else if (length > 32) {
+            alert('La longitud máxima de la contraseña es 32 caracteres');
+            return;
+        }
+
         const password = generatePassword(length, options);
         document.getElementById('password').innerText = password;
+
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', 'getNewTime.php', true);
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                const response = JSON.parse(xhr.responseText);
+                document.getElementById('crackTime').innerText = response.crack_time;
+            }
+        };
+        xhr.send('password=' + encodeURIComponent(password));
+
         copyToClipboard(password);
     }
+
 
     function generatePassword(length, options) {
         const uppercaseChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -248,6 +283,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         return password;
     }
+
 
     function copyToClipboard(text) {
         const textarea = document.createElement('textarea');
